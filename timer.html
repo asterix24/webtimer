@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="asterix.cloud Simple timer">
+<title>Simple Timer and Clock</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
+<link rel="stylesheet" href="font/css/font-awesome.min.css">
+<html>
+
+<head>
+    <script type="text/javascript">
+        window.onload = function () {
+            var start_btn = document.getElementById("btnstart");
+            var stop_btn = document.getElementById("btnstop");
+            var clear_btn = document.getElementById("btnclear");
+            var select_time = document.getElementById("select_time");
+
+            var seconds = 0;
+            var current_timer = 0;
+            var current_clock = 0;
+
+            function get_selected_time() {
+                seconds = 60 * select_time.value;
+                document.getElementById("res").innerHTML = convert_sec_hms(seconds);
+            }
+
+            select_time.onclick = get_selected_time;
+
+            function convert_sec_hms(sec) {
+                var h = Math.floor(sec / 3600);
+                var m = Math.floor((sec - (h * 3600)) / 60);
+                var s = sec - (h * 3600) - (m * 60);
+                h = h ? (h > 9 ? h : "0" + h) : "00";
+                m = m ? (m > 9 ? m : "0" + m) : "00";
+                s = s ? (s > 9 ? s : "0" + s) : "00";
+                return h + ":" + m + ":" + s;
+            }
+
+            function show_timer() {
+                seconds = seconds > 0 ? (seconds - 1) : 0;
+                document.getElementById("res").innerHTML = convert_sec_hms(seconds);
+                if (seconds > 0) {
+                    start_timer();
+                }
+            }
+
+            function start_timer() {
+                current_timer = setTimeout(show_timer, 1000);
+            }
+
+            start_btn.onclick = start_timer;
+            stop_btn.onclick = function () {
+                clearTimeout(current_timer);
+            }
+
+            clear_btn.onclick = function () {
+                clearTimeout(current_timer);
+                document.getElementById("res").innerHTML = "00:00:00";
+                document.getElementById("select_time").selectedIndex = 0;
+                seconds = 0;
+            }
+
+
+            function show_clock() {
+                var curr_time = new Date();
+                const options_date = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                var s = curr_time.getSeconds();
+                var m = curr_time.getMinutes();
+                var h = curr_time.getHours();
+                document.getElementById("clock").innerHTML = h + ":" + m + ":" + s;
+                document.getElementById("date").innerHTML = curr_time.toLocaleDateString('it-IT', options_date);
+
+                clock_timer();
+            }
+            function clock_timer() {
+                current_clock = setTimeout(show_clock, 1000);
+            }
+            clock_timer();
+        }
+    </script>
+</head>
+
+<body>
+    <section class="section">
+        <div class="container">
+            <div class="subtitle">
+                My first website with <strong>Bulma</strong>!
+            </div>
+            <div class="columns">
+                <div class="column">
+                    <div class="card">
+                        <header class="card-header">
+                            <div class="card-header-title title">
+                                <div class="columns">
+                                    <div class="column">
+                                        <span class="icon">
+                                            <i class="fa fa-clock-o" aria-hidden="true"></i>
+                                        </span>
+                                        <span>Local Time</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </header>
+                        <div class="card-content">
+                            <div class="content has-text-weight-bold is-family-monospace is-size-1 has-text-centered">
+                                <h1 id="clock">00:00:00</h1>
+                            </div>
+                            <div class="content has-text-weight-bold is-size-5 has-text-centered">
+                                <h1 id="date">00:00:00</h1>
+                            </div>
+                        </div>
+                        <footer class="card-footer">
+                        </footer>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="card">
+                        <header class="card-header">
+                            <div class="card-header-title title">
+                                <div class="columns">
+                                    <div class="column">
+                                        <span class="icon">
+                                            <i class="fa fa-hourglass-o" aria-hidden="true"></i>
+                                        </span>
+                                        <span>Timer</span>
+                                    </div>
+                                    <div class="column">
+                                        <div class="control has-icons-left is-12">
+                                            <span class="select">
+                                                <select id="select_time">
+                                                    <option value="0" selected>Select</option>
+                                                    <option value="30">30min</option>
+                                                    <option value="45">45min</option>
+                                                    <option value="60">1ora</option>
+                                                </select>
+                                            </span>
+                                            <span class="icon is-small is-left">
+                                                <i class="fa fa-clock-o"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </header>
+                        <div class="card-content">
+                            <div class="content has-text-weight-bold is-family-monospace is-size-1 has-text-centered">
+                                <h1 id="res">00:00:00</h1>
+                            </div>
+                            <progress class="progress is-primary" value="15" max="100">15%</progress>
+                        </div>
+                        <footer class="card-footer">
+                            <button class="button is-primary is-medium card-footer-item" id="btnstart">
+                                <span class="icon is-small">
+                                    <i class="fa fa-play-circle"></i>
+                                </span>
+                                <span>Start</span>
+                            </button>
+                            <button class="button is-warning is-medium card-footer-item" id="btnstop">
+                                <span class="icon is-small">
+                                    <i class="fa fa-pause"></i>
+                                </span>
+                                <span>Pause</span>
+                            </button>
+                            <button class="button is-danger is-medium card-footer-item" id="btnclear">
+                                <span class="icon is-small">
+                                    <i class="fa fa-stop"></i>
+                                </span>
+                                <span>Stop</span>
+                            </button>
+                        </footer>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="footer">
+        <div class="content has-text-centered">
+            <strong>Bulma</strong> by <a href="https://jgthms.com">Jeremy Thomas</a>. The source code is licensed
+            is licensed <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY NC SA 4.0</a>.
+        </div>
+    </footer>
+</body>
+<html>
