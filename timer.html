@@ -14,13 +14,45 @@
             var stop_btn = document.getElementById("btnstop");
             var clear_btn = document.getElementById("btnclear");
             var select_time = document.getElementById("select_time");
+            var edit_btn = document.getElementById("edit_btn");
+            var edit_set_min_btn = document.getElementById("edit_set_min_btn");
+            var edit_set_sec_btn = document.getElementById("edit_set_sec_btn");
+            var progress_bar = document.getElementById("show_progress");
 
             var seconds = 0;
+            var max_seconds = 0;
             var current_timer = 0;
             var current_clock = 0;
+            var edit_toggle = true;
+            var blink = true;
+
+            function edit_set_value() {
+                seconds = 60 * edit_set_min_value.value + edit_set_sec_value.value;
+                max_seconds = seconds;
+                document.getElementById("res").innerHTML = convert_sec_hms(seconds);
+            }
+            edit_set_min_btn.onclick = edit_set_value;
+            edit_set_sec_btn.onclick = edit_set_value;
+
+            function show_line_edit() {
+                if (edit_toggle) {
+                    document.getElementById("edit_time").className = "";
+                    document.getElementById("drop_time").className = "is-hidden";
+                    document.getElementById("edit_btn").className = "fa fa-bars";
+                } else {
+                    document.getElementById("edit_time").className = "is-hidden";
+                    document.getElementById("drop_time").className = "";
+                    document.getElementById("edit_btn").className = "fa fa-pencil";
+                }
+
+                edit_toggle = !edit_toggle;
+            }
+            edit_btn.onclick = show_line_edit;
+
 
             function get_selected_time() {
                 seconds = 60 * select_time.value;
+                max_seconds = seconds;
                 document.getElementById("res").innerHTML = convert_sec_hms(seconds);
             }
 
@@ -39,9 +71,20 @@
             function show_timer() {
                 seconds = seconds > 0 ? (seconds - 1) : 0;
                 document.getElementById("res").innerHTML = convert_sec_hms(seconds);
-                if (seconds > 0) {
-                    start_timer();
+                var p = Math.floor(seconds / max_seconds * 100)
+                progress_bar.value = p;
+                if (p < 31) {
+                    progress_bar.className = "progress is-danger";
                 }
+                if (seconds === 0) {
+                    if (blink) {
+                        document.getElementById("res").className = "";
+                    } else {
+                        document.getElementById("res").className = "has-text-danger";
+                    }
+                    blink = !blink;
+                }
+                start_timer();
             }
 
             function start_timer() {
@@ -57,9 +100,11 @@
                 clearTimeout(current_timer);
                 document.getElementById("res").innerHTML = "00:00:00";
                 document.getElementById("select_time").selectedIndex = 0;
+                document.getElementById("res").className = "";
+                progress_bar.className = "progress is-primary";
+                progress_bar.value = 0;
                 seconds = 0;
             }
-
 
             function show_clock() {
                 var curr_time = new Date();
@@ -83,9 +128,7 @@
 <body>
     <section class="section">
         <div class="container">
-            <div class="subtitle">
-                My first website with <strong>Bulma</strong>!
-            </div>
+            <div class="subtitle">Timer asterix.cloud</div>
             <div class="columns">
                 <div class="column">
                     <div class="card">
@@ -125,28 +168,65 @@
                                         <span>Timer</span>
                                     </div>
                                     <div class="column">
-                                        <div class="control has-icons-left is-12">
-                                            <span class="select">
-                                                <select id="select_time">
-                                                    <option value="0" selected>Select</option>
-                                                    <option value="30">30min</option>
-                                                    <option value="45">45min</option>
-                                                    <option value="60">1ora</option>
-                                                </select>
-                                            </span>
-                                            <span class="icon is-small is-left">
-                                                <i class="fa fa-clock-o"></i>
-                                            </span>
+                                        <div class="columns">
+                                            <div class="column">
+                                                <span id="drop_time">
+                                                    <div class="control has-icons-left is-12">
+                                                        <span class="select">
+                                                            <select id="select_time">
+                                                                <option value="0" selected>Select</option>
+                                                                <option value="30">10min</option>
+                                                                <option value="30">15min</option>
+                                                                <option value="30">30min</option>
+                                                                <option value="45">45min</option>
+                                                                <option value="60">1ora</option>
+                                                            </select>
+                                                        </span>
+                                                        <span class="icon is-small is-left">
+                                                            <i class="fa fa-clock-o"></i>
+                                                        </span>
+                                                    </div>
+                                                </span>
+
+                                                <span id="edit_time" class="is-hidden">
+                                                    <div class="columns">
+                                                        <div class="field has-addons">
+                                                            <div class="control">
+                                                                <input class="input is-normal" type="text"
+                                                                    placeholder="min" id="edit_set_min_value">
+                                                            </div>
+                                                            <div class="control">
+                                                                <a class="button is-info" id="edit_set_min_btn">M</a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="field has-addons">
+                                                            <div class="control">
+                                                                <input class="input is-normal" type="text"
+                                                                    placeholder="sec" id="edit_set_sec_value">
+                                                            </div>
+                                                            <div class="control">
+                                                                <a class="button is-info" id="edit_set_sec_btn">S</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </span>
+
+                                            </div>
+                                            <div class="column">
+                                                <span class="icon">
+                                                    <i class="fa fa-pencil" id="edit_btn" aria-hidden="true"></i>
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
                         </header>
                         <div class="card-content">
                             <div class="content has-text-weight-bold is-family-monospace is-size-1 has-text-centered">
                                 <h1 id="res">00:00:00</h1>
                             </div>
-                            <progress class="progress is-primary" value="15" max="100">15%</progress>
+                            <progress id="show_progress" class="progress is-primary" value="0" min="0"
+                                max="100">0</progress>
                         </div>
                         <footer class="card-footer">
                             <button class="button is-primary is-medium card-footer-item" id="btnstart">
