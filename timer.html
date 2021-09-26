@@ -108,12 +108,12 @@
 
             function show_clock() {
                 var curr_time = new Date();
-                const options_date = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                var s = curr_time.getSeconds();
-                var m = curr_time.getMinutes();
-                var h = curr_time.getHours();
-                document.getElementById("clock").innerHTML = h + ":" + m + ":" + s;
-                document.getElementById("date").innerHTML = curr_time.toLocaleDateString('it-IT', options_date);
+                document.getElementById("clock").innerHTML = curr_time.toLocaleTimeString('it-IT', {
+                    hour12: false, hour: "numeric", minute: "numeric", second: "numeric"
+                });
+                document.getElementById("date").innerHTML = curr_time.toLocaleDateString('it-IT', {
+                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                });
 
                 clock_timer();
             }
